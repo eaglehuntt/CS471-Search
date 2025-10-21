@@ -61,6 +61,55 @@ class SearchProblem:
         """
         util.raiseNotDefined()
 
+class SearchGeneratior:
+
+    def __init__(self, problem: SearchProblem, fringe, heuristic=None) -> None:
+        self.problem = problem
+        self.fringe = fringe
+        self.heuristic = heuristic
+
+
+    def search(self):
+        start_state = self.problem.getStartState()
+        directions = []
+        
+        # Push the start state onto the stack
+        if isinstance(self.fringe, util.PriorityQueue):
+            self.fringe.push((start_state, directions), 0) 
+        else:
+            self.fringe.push((start_state, directions))
+
+        # Mark the start state as visited
+        visited = set()
+
+        if self.fringe.isEmpty():
+            raise Exception("Fringe is empty - no solution found")
+    
+        while not self.fringe.isEmpty():
+            # Pop the current state from the stack
+            current_state, directions = self.fringe.pop() 
+
+            # Check if the current state is our goal state
+            if self.problem.isGoalState(current_state):
+                return directions
+
+            if not current_state in visited:
+                visited.add(current_state)
+
+                # Get successors of the current state
+                successors = self.problem.getSuccessors(current_state)
+        
+                for successor in successors:
+                    next_state = successor[0]
+                    action = successor[1]
+                    new_directions = directions + [action]
+                    if not next_state in visited:
+                        if isinstance(self.fringe, util.PriorityQueue):
+                            # Calculate priority based on cost and heuristic
+                            x = self.problem.getCostOfActions()
+                            print(x)
+                        else:
+                            self.fringe.push((next_state, new_directions))
 
 def tinyMazeSearch(problem):
     """
@@ -73,61 +122,16 @@ def tinyMazeSearch(problem):
     return  [s, s, w, s, w, w, s, w]
 
 def depthFirstSearch(problem: SearchProblem):
-    """
-    Search the deepest nodes in the search tree first.
-
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
-
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
-
-    """
-
-    # Create an empty stack
-    start_state = problem.getStartState()
-    directions = []
-
-    # Push the start state onto the stack
-    stack = util.Stack()
-    stack.push((start_state, directions)) 
-
-    # Mark the start state as visited
-    visited = set()
-
-    # Keep a list of directions in case we are 
+    """Search the deepest nodes in the search tree first."""
+    return SearchGeneratior(problem, fringe=util.Stack()).search()
     
-    while not stack.isEmpty():
-        # Pop the current state from the stack
-        current_state, directions = stack.pop() 
-
-        # Check if the current state is our goal state
-        if problem.isGoalState(current_state):
-            return directions
-
-
-        if not current_state in visited:
-            visited.add(current_state)
-
-            # Get successors of the current state
-            successors = problem.getSuccessors(current_state)
-    
-            for successor in successors:
-                next_state = successor[0]
-                action = successor[1]
-                new_directions = directions + [action]
-                if not next_state in visited:
-                    stack.push((next_state, new_directions))
-
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return SearchGeneratior(problem, fringe=util.Queue()).search()
 
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return SearchGeneratior(problem, fringe=util.PriorityQueue()).search()
 
 def nullHeuristic(state, problem=None):
     """
@@ -138,8 +142,7 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return SearchGeneratior(problem, fringe=util.PriorityQueue(), heuristic=heuristic).search()
 
 
 # Abbreviations
