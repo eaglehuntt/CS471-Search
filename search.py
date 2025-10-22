@@ -63,8 +63,9 @@ class SearchProblem:
 
 class SearchGeneratior:
 
-    def __init__(self, problem: SearchProblem, fringe, heuristic=None) -> None:
+    def __init__(self, problem: SearchProblem, fringe, algorithm, heuristic=None) -> None:
         self.problem = problem
+        self.algorith = algorithm
         self.fringe = fringe
         self.heuristic = heuristic
 
@@ -72,6 +73,7 @@ class SearchGeneratior:
     def search(self):
         start_state = self.problem.getStartState()
         directions = []
+        total_cost = self.problem.getCostOfActions(directions)
         
         # Push the start state onto the stack
         if isinstance(self.fringe, util.PriorityQueue):
@@ -82,14 +84,12 @@ class SearchGeneratior:
         # Mark the start state as visited
         visited = set()
 
-        if self.fringe.isEmpty():
-            raise Exception("Fringe is empty - no solution found")
     
         while not self.fringe.isEmpty():
-            # Pop the current state from the stack
-            current_state, directions = self.fringe.pop() 
 
-            # Check if the current state is our goal state
+            # Pop the current state from the stack (ucs will get the lowest cost node)
+            current_state, directions = self.fringe.pop()
+
             if self.problem.isGoalState(current_state):
                 return directions
 
@@ -103,13 +103,20 @@ class SearchGeneratior:
                     next_state = successor[0]
                     action = successor[1]
                     new_directions = directions + [action]
-                    if not next_state in visited:
-                        if isinstance(self.fringe, util.PriorityQueue):
-                            # Calculate priority based on cost and heuristic
-                            x = self.problem.getCostOfActions()
-                            print(x)
-                        else:
-                            self.fringe.push((next_state, new_directions))
+
+
+                    if self.algorith == "dfs" or self.algorith == "bfs":
+
+                        if not next_state in visited:
+                                self.fringe.push((next_state, new_directions))
+                    
+                    elif self.algorith == "ucs":
+
+                        if next_state not in visited: 
+                            # calculate the cumulative cost to the next state
+                            cost_to_next_state = self.problem.getCostOfActions(new_directions) 
+                            self.fringe.update((next_state, new_directions), cost_to_next_state)   
+                        
 
 def tinyMazeSearch(problem):
     """
@@ -123,15 +130,15 @@ def tinyMazeSearch(problem):
 
 def depthFirstSearch(problem: SearchProblem):
     """Search the deepest nodes in the search tree first."""
-    return SearchGeneratior(problem, fringe=util.Stack()).search()
+    return SearchGeneratior(problem, algorithm="dfs", fringe=util.Stack()).search()
     
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
-    return SearchGeneratior(problem, fringe=util.Queue()).search()
+    return SearchGeneratior(problem, algorithm="bfs", fringe=util.Queue()).search()
 
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
-    return SearchGeneratior(problem, fringe=util.PriorityQueue()).search()
+    return SearchGeneratior(problem, algorithm="ucs", fringe=util.PriorityQueue()).search()
 
 def nullHeuristic(state, problem=None):
     """
