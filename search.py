@@ -73,7 +73,6 @@ class SearchGeneratior:
     def search(self):
         start_state = self.problem.getStartState()
         directions = []
-        total_cost = self.problem.getCostOfActions(directions)
         
         # Push the start state onto the stack
         if isinstance(self.fringe, util.PriorityQueue):
