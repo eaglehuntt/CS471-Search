@@ -114,8 +114,25 @@ class SearchGeneratior:
                         if next_state not in visited: 
                             # calculate the cumulative cost to the next state
                             cost_to_next_state = self.problem.getCostOfActions(new_directions) 
+
+                            # If item already in priority queue with higher priority, update its priority and rebuild the heap.
+                            # If item already in priority queue with equal or lower priority, do nothing.
+                            # If item not in priority queue, do the same thing as self.push.
                             self.fringe.update((next_state, new_directions), cost_to_next_state)   
+
+
+                    elif self.algorith == "a*":
                         
+                        if next_state not in visited:
+
+                            # calculate the cumulative cost to the next state: g(n)
+                            cost_to_next_state = self.problem.getCostOfActions(new_directions)
+
+                            # get the heuristic value to the next state: h(n)
+                            heuristic= self.heuristic(next_state, self.problem) 
+
+                            # update the fringe with the priority of g(n) + h(n)
+                            self.fringe.update((next_state, new_directions), heuristic + cost_to_next_state)
 
 def tinyMazeSearch(problem):
     """
@@ -148,7 +165,7 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    return SearchGeneratior(problem, fringe=util.PriorityQueue(), heuristic=heuristic).search()
+    return SearchGeneratior(problem, algorithm="a*", fringe=util.PriorityQueue(), heuristic=heuristic).search()
 
 
 # Abbreviations
