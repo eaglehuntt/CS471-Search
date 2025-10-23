@@ -290,20 +290,19 @@ class CornersProblem(search.SearchProblem):
                 print('Warning: no food in corner ' + str(corner))
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
 
+
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return (self.startingPosition, frozenset())
 
     def isGoalState(self, state: Any):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return len(state[1]) == 4
 
     def getSuccessors(self, state: Any):
         """
@@ -320,12 +319,26 @@ class CornersProblem(search.SearchProblem):
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
             # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
+            x,y = state[0]
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            next_position = (nextx, nexty)
+            hitsWall = self.walls[nextx][nexty]
 
-            "*** YOUR CODE HERE ***"
+            if not hitsWall:
+                # get previous set of corners visited
+                previous_corners = state[1] 
+
+                # copy the previous set of corners
+                new_corners = previous_corners 
+
+                # check if our current position is a valid corner, and not already in our set
+                if next_position in self.corners and next_position not in previous_corners:
+                    new_corners = new_corners | {next_position}
+
+                # append a successor state with the new valid location & corners visited, action, and cost
+                successors.append([((nextx, nexty), new_corners), action, 1]) 
+
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
@@ -345,6 +358,7 @@ class CornersProblem(search.SearchProblem):
 
 
 def cornersHeuristic(state: Any, problem: CornersProblem):
+
     """
     A heuristic for the CornersProblem that you defined.
 
