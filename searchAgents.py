@@ -318,23 +318,22 @@ class CornersProblem(search.SearchProblem):
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
-            # Here's a code snippet for figuring out whether a new position hits a wall:
             x,y = state[0]
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             next_position = (nextx, nexty)
             hitsWall = self.walls[nextx][nexty]
 
-            if not hitsWall:
+            if not hitsWall: # we know the move is legal 
+
                 # get previous set of corners visited
                 previous_corners = state[1] 
 
-                # copy the previous set of corners
                 new_corners = previous_corners 
 
                 # check if our current position is a valid corner, and not already in our set
                 if next_position in self.corners and next_position not in previous_corners:
-                    new_corners = new_corners | {next_position}
+                    new_corners = new_corners | {next_position} # then add it to our set
 
                 # append a successor state with the new valid location & corners visited, action, and cost
                 successors.append([((nextx, nexty), new_corners), action, 1]) 
@@ -371,6 +370,8 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
+
+    # the manhattan distance of the farthest corner from pacman will be admissible
 
     # pacman's position
     pacman_position = state[0]
