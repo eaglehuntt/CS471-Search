@@ -61,7 +61,7 @@ class SearchProblem:
         """
         util.raiseNotDefined()
 
-class SearchGeneratior:
+class SearchGenerator:
 
     def __init__(self, problem: SearchProblem, fringe, algorithm, heuristic=None) -> None:
         self.problem = problem
@@ -116,7 +116,9 @@ class SearchGeneratior:
                             cost_to_next_state = self.problem.getCostOfActions(new_directions) 
 
                             # If item already in priority queue with higher priority, update its priority and rebuild the heap.
+
                             # If item already in priority queue with equal or lower priority, do nothing.
+                            
                             # If item not in priority queue, do the same thing as self.push.
                             self.fringe.update((next_state, new_directions), cost_to_next_state)   
 
@@ -146,15 +148,15 @@ def tinyMazeSearch(problem):
 
 def depthFirstSearch(problem: SearchProblem):
     """Search the deepest nodes in the search tree first."""
-    return SearchGeneratior(problem, algorithm="dfs", fringe=util.Stack()).search()
+    return SearchGenerator(problem, algorithm="dfs", fringe=util.Stack()).search()
     
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
-    return SearchGeneratior(problem, algorithm="bfs", fringe=util.Queue()).search()
+    return SearchGenerator(problem, algorithm="bfs", fringe=util.Queue()).search()
 
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
-    return SearchGeneratior(problem, algorithm="ucs", fringe=util.PriorityQueue()).search()
+    return SearchGenerator(problem, algorithm="ucs", fringe=util.PriorityQueue()).search()
 
 def nullHeuristic(state, problem=None):
     """
@@ -165,7 +167,7 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    return SearchGeneratior(problem, algorithm="a*", fringe=util.PriorityQueue(), heuristic=heuristic).search()
+    return SearchGenerator(problem, algorithm="a*", fringe=util.PriorityQueue(), heuristic=heuristic).search()
 
 
 # Abbreviations
