@@ -473,8 +473,37 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    return 0
+    food_list = foodGrid.asList()
+
+    if len (food_list) == 0:
+        # pacman ate all the food
+        return 0 
+    
+    if len(food_list) == 1:
+        # return the manhattan distance of the only piece of food left
+        return util.manhattanDistance(position, food_list[0])
+    
+    
+    # get the farthest piece of food from pacman (maximum distance away)
+    farthest_distance_from_pacman_to_food = max(util.manhattanDistance(position, food) for food in food_list)
+
+    # get the diameter of the max pair of anhattan distances among foods
+    # we know this will be at least the distance pacman will have to travel to reach the goal because he will need to eat both pieces of food
+
+    farthest_distance_from_food_pairs = 0
+
+    # iterate and create pairs
+    for i in range(len(food_list)):
+        for j in range(i+1, len(food_list)): 
+
+            # get manhattan distance from food at i and j
+            distance_to_next_node = util.manhattanDistance(food_list[i], food_list[j])
+            
+            # if we find a pair with a greater distance, update our max pair
+            if distance_to_next_node > farthest_distance_from_food_pairs:
+                farthest_distance_from_food_pairs = distance_to_next_node
+
+    return max(farthest_distance_from_pacman_to_food, farthest_distance_from_food_pairs)
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
